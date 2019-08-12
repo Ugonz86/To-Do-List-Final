@@ -1,25 +1,32 @@
-using Microsoft.AspNetCore.Mvc;
-using ToDoList.Models;
-using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using ToDoList.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
+using System.Security.Claims;
+using System;
 
 namespace ToDoList.Controllers
 {
+    [Authorize]
     public class ItemsController : Controller
     {
         private readonly ToDoListContext _db;
-
-        public ItemsController(ToDoListContext db)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public ItemsController(UserManager<ApplicationUser> userManager, ToDoListContext database)
         {
-            _db = db;
+          _userManager = userManager;
+          _db = database;
         }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            List<Item> model = _db.Items.Include(items => items.Category).ToList();
-            return View(model);
+            var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var currentUser = await _userManager.FindByIdAsync(userId);
+            return View(_db.Items.Where(x => x.User.Id == currentUser.Id));
         }
 
         public ActionResult Create()
@@ -29,64 +36,12 @@ namespace ToDoList.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(Item item)
+        public async Task<ActionResult> Create(Item item)
         {
+            var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var currentUser = await _userManager.FindByIdAsync(userId);
+            item.User = currentUser;
             _db.Items.Add(item);
-            _db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
-        public ActionResult Details(int id)
-        {
-            Item thisItem = _db.Items.FirstOrDefault(items => items.ItemId == id);
-            return View(thisItem);
-        }
-
-        public ActionResult Edit(int id)
-        {
-            var thisItem = _db.Items.FirstOrDefault(items => items.ItemId == id);
-            ViewBag.CategoryId = new SelectList(_db.Categories, "CategoryId", "Name");
-            return View(thisItem);
-        }
-
-        [HttpPost]
-        public ActionResult Edit(Item item)
-        {
-            _db.Entry(item).State = EntityState.Modified;
-            _db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
-        public ActionResult Delete(int id)
-        {
-            var thisItem = _db.Items.FirstOrDefault(items => items.ItemId == id);
-            return View(thisItem);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            var thisItem = _db.Items.FirstOrDefault(items => items.ItemId == id);
-            _db.Items.Remove(thisItem);
-            _db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
-        public ActionResult DeleteAll()
-        {
-            var allItems = _db.Items.ToList();
-            return View();
-        }
-
-        [HttpPost, ActionName("DeleteAll")]
-            public ActionResult DeleteAllConfirmed()
-        {
-            var allItems = _db.Items.ToList();
-
-        foreach (var item in allItems)
-        {
-            _db.Items.Remove(item);
-        }
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
