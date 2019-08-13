@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ToDoList.Models;
+//new code
+using Microsoft.AspNetCore.Identity;
 
 namespace ToDoList
 {
@@ -29,18 +30,19 @@ namespace ToDoList
         .AddDbContext<ToDoListContext>(options => options
         .UseMySql(Configuration["ConnectionStrings:DefaultConnection"]));
 
+      //new code
       services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ToDoListContext>()
                 .AddDefaultTokenProviders();
-                
+
       services.Configure<IdentityOptions>(options =>
       {
-      options.Password.RequireDigit = false;
-      options.Password.RequiredLength = 0;
-      options.Password.RequireLowercase = false;
-      options.Password.RequireNonAlphanumeric = false;
-      options.Password.RequireUppercase = false;
-      options.Password.RequiredUniqueChars = 0;
+        options.Password.RequireDigit = false;
+        options.Password.RequiredLength = 0;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequiredUniqueChars = 0;
       });
     }
 
@@ -50,6 +52,7 @@ namespace ToDoList
 
       app.UseDeveloperExceptionPage();
 
+      //new code
       app.UseAuthentication();
 
       app.UseMvc(routes =>

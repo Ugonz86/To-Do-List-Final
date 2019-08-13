@@ -1,6 +1,4 @@
-@{
-  Layout = "_Layout";
-}
+
 
 @model ToDoList.Models.Category;
 
@@ -23,7 +21,7 @@ else
   </ul>
 }
 <hr />
-
+<p>@Html.ActionLink("Add new task", "Create", "Items")</p>
 <p>@Html.ActionLink("Back to categories", "Index")</p>
 <p>@Html.ActionLink("Edit Category", "Edit", new { id = Model.CategoryId })</p>
 <p>@Html.ActionLink("Delete Category", "Delete", new { id = Model.CategoryId })</p>

@@ -206,12 +206,16 @@ namespace ToDoList.Migrations
 
             modelBuilder.Entity("ToDoList.Models.Item", b =>
                 {
-                    b.Property<int>("ItemId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Description");
 
-                    b.HasKey("ItemId");
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Items");
                 });
@@ -269,9 +273,16 @@ namespace ToDoList.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ToDoList.Models.Item", "Item")
-                        .WithMany("Categories")
+                        .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ToDoList.Models.Item", b =>
+                {
+                    b.HasOne("ToDoList.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }
