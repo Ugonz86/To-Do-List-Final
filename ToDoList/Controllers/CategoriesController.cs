@@ -37,10 +37,10 @@ namespace ToDoList.Controllers
     public ActionResult Details(int id)
     {
       var thisCategory = _db.Categories
-          .Include(category => category.Items)
-          .ThenInclude(join => join.Item)
-          .FirstOrDefault(category => category.CategoryId == id);
-      return View(thisCategory);
+        .Include(category => category.Items)
+        .ThenInclude(join => join.Item)
+        .FirstOrDefault(category => category.CategoryId == id);
+    return View(thisCategory);
     }
 
     public ActionResult Edit(int id)

@@ -1,11 +1,8 @@
-<!-- @*
 @{
   Layout = "_Layout";
 }
 
-@using System.Security.Claims
-
-@model IEnumerable<ToDoList.Models.Item>
+@model ToDoList.Models.Item
 
 <h2>Are you sure you want to delete this?</h2>
 
@@ -15,4 +12,3 @@
     <input type="submit" value="Delete" />
 }
 @Html.ActionLink("Back to List", "Index")
-*@ -->
